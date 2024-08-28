@@ -1,193 +1,128 @@
-DROP DATABASE bd_biblioteca;
+-- CRIANDO O BANCO DE DADOS;
 CREATE DATABASE IF NOT EXISTS bd_biblioteca;
+
+-- USANDO O BANCO DE DADOS
 USE bd_biblioteca;
 
-CREATE TABLE IF NOT EXISTS usuarios (
-  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-  nome_usuario VARCHAR(80),
-  login_usuario VARCHAR(80) NOT NULL UNIQUE,
-  senha_usuario VARCHAR(128) NOT NULL
-);
+-- CRIANDO A TABELA USUARIOS
+CREATE TABLE
+  IF NOT EXISTS usuarios (
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    nome_usuario VARCHAR(80),
+    login_usuario VARCHAR(80) NOT NULL UNIQUE,
+    senha_usuario VARCHAR(128) NOT NULL
+  );
 
-CREATE TABLE IF NOT EXISTS estados (
-  id_estado INT PRIMARY KEY AUTO_INCREMENT,
-  nome_estado VARCHAR(45)
-);
+-- CRIANDO A TABELA ESTADOS
+CREATE TABLE
+  IF NOT EXISTS estados (
+    id_estado INT PRIMARY KEY AUTO_INCREMENT,
+    nome_estado VARCHAR(45)
+  );
 
-CREATE TABLE IF NOT EXISTS cidades(
-  id_cidade INT PRIMARY KEY AUTO_INCREMENT,
-  nome_cidade VARCHAR(45),
-  fk_estado INT,
-  FOREIGN KEY (fk_estado) REFERENCES estados(id_estado)
-);
+-- CRIANDO A TABELA CIDADES
+CREATE TABLE
+  IF NOT EXISTS cidades (
+    id_cidade INT PRIMARY KEY AUTO_INCREMENT,
+    nome_cidade VARCHAR(45),
+    fk_estado INT,
+    FOREIGN KEY (fk_estado) REFERENCES estados (id_estado)
+  );
 
-CREATE TABLE IF NOT EXISTS bairros(
-  id_bairro INT PRIMARY KEY AUTO_INCREMENT,
-  nome_bairro VARCHAR(45),
-  fk_cidade INT,
-  FOREIGN KEY (fk_cidade) REFERENCES cidades(id_cidade)
-);
+-- CRIANDO A TABELA BAIRROS
+CREATE TABLE
+  IF NOT EXISTS bairros (
+    id_bairro INT PRIMARY KEY AUTO_INCREMENT,
+    nome_bairro VARCHAR(45),
+    fk_cidade INT,
+    FOREIGN KEY (fk_cidade) REFERENCES cidades (id_cidade)
+  );
 
-CREATE TABLE IF NOT EXISTS tipos_mov(
-  id_tipo_mov INT PRIMARY KEY AUTO_INCREMENT,
-  nome_tipo_mov VARCHAR(15)
-);
+-- CRIANDO A TABELA TIPOS DE MOVIMENTOS
+CREATE TABLE
+  IF NOT EXISTS tipos_mov (
+    id_tipo_mov INT PRIMARY KEY AUTO_INCREMENT,
+    nome_tipo_mov VARCHAR(15)
+  );
 
-CREATE TABLE IF NOT EXISTS movimentos(
-  id_movimento INT PRIMARY KEY AUTO_INCREMENT,
-  data_movimento DATE,
-  quant_movimento DOUBLE NULL DEFAULT NULL,
-  fk_usuario INT,
-  fk_tipo INT,
-  FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario),
-  FOREIGN KEY (fk_tipo) REFERENCES tipos_mov(id_tipo_mov)
-);
+-- CRIANDO A TABELA DE MOVIMENTOS
+CREATE TABLE
+  IF NOT EXISTS movimentos (
+    id_movimento INT PRIMARY KEY AUTO_INCREMENT,
+    data_movimento DATE,
+    quant_movimento DOUBLE NULL DEFAULT NULL,
+    fk_usuario INT,
+    fk_tipo INT,
+    FOREIGN KEY (fk_usuario) REFERENCES usuarios (id_usuario),
+    FOREIGN KEY (fk_tipo) REFERENCES tipos_mov (id_tipo_mov)
+  );
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`endereco`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`endereco` (
-  `id_endereco` INT(11) NOT NULL AUTO_INCREMENT,
-  `rua_endereco` VARCHAR(30) NULL DEFAULT NULL,
-  `cep` VARCHAR(30) NULL,
-  `fk_usuario_endereco` INT(11) NULL DEFAULT NULL,
-  `fk_bairro` INT(11) NOT NULL,
-  `fk_movimento` INT(11) NOT NULL,
-  PRIMARY KEY (`id_endereco`),
-  CONSTRAINT `endereco_ibfk_1`
-    FOREIGN KEY (`fk_usuario_endereco`)
-    REFERENCES `bd_biblioteca`.`usuarios` (`id_usuario`),
-  CONSTRAINT `fk_endereco_bairros1`
-    FOREIGN KEY (`fk_bairro`)
-    REFERENCES `bd_biblioteca`.`bairros` (`id_bairro`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_endereco_movimentos1`
-    FOREIGN KEY (`fk_movimento`)
-    REFERENCES `bd_biblioteca`.`movimentos` (`id_movimento`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+-- CRIANDO A TABELA DE ENDERECO
+CREATE TABLE
+  IF NOT EXISTS endereco (
+    id_endereco INT PRIMARY KEY AUTO_INCREMENT,
+    rua_endereco VARCHAR(30),
+    cep VARCHAR(30),
+    fk_usuario INT (11),
+    fk_bairro INT (11) NOT NULL,
+    fk_movimento INT (11) NOT NULL,
+    FOREIGN KEY (fk_usuario) REFERENCES usuarios (id_usuario),
+    FOREIGN KEY (fk_bairro) REFERENCES bairros (id_bairro),
+    FOREIGN KEY (fk_movimento) REFERENCES movimentos (id_movimento)
+  );
 
-ALTER TABLE `bd_biblioteca`.`endereco`
-ADD KEY `fk_usuario_endereco` (`fk_usuario_endereco`);
+-- CRIANDO A TABELA DE GENEROS DOS LIVROS
+CREATE TABLE
+  IF NOT EXISTS generos (
+    id_genero INT PRIMARY KEY AUTO_INCREMENT,
+    nome_genero VARCHAR(80),
+  );
 
-ALTER TABLE `bd_biblioteca`.`endereco`
-ADD KEY `fk_endereco_bairros1_idx` (`fk_bairro`);
+-- CRIANDO A TABELA DE LOCAIS DE ARMAZENAMENTO DOS LIVROS
+CREATE TABLE
+  IF NOT EXISTS locais (
+    id_local INT PRIMARY KEY AUTO_INCREMENT,
+    sessao_local VARCHAR(10),
+    fileira_local INT (11),
+    num_fileira_local INT
+  );
 
-ALTER TABLE `bd_biblioteca`.`endereco`
-ADD KEY `fk_endereco_movimentos1_idx` (`fk_movimento`);
+-- CRIANDO A TABELA LIVROS
+CREATE TABLE
+  IF NOT EXISTS livros (
+    id_livro INT PRIMARY KEY AUTO_INCREMENT,
+    titulo_livro VARCHAR(80),
+    valor_venda_livro DOUBLE,
+    valor_aluguel_livro DOUBLE,
+    isbn_livro VARCHAR(80),
+    quantidade_livro INT,
+    fk_local,
+    FOREIGN KEY (fk_local) REFERENCES locais (id_local)
+  );
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`generos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`generos` (
-  `id_genero` INT(11) NOT NULL AUTO_INCREMENT,
-  `nome_genero` VARCHAR(80) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_genero`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+-- CRIANDO A TABELA DE RELAÇÃO DE LIVROS COM AUTORES
+CREATE TABLE
+  IF NOT EXISTS livros_autores (
+    fk_livro INT,
+    fk_autor INT,
+    FOREIGN KEY (`fk_autor`) REFERENCES usuarios (id_usuario),
+    FOREIGN KEY (`fk_livro`) REFERENCES livros (id_livro)
+  );
 
+-- CRIANDO A TABELA DE RELAÇÃO DE LIVROS COM GENEROS
+CREATE TABLE
+  IF NOT EXISTS livros_generos (
+    fk_livro INT,
+    fk_genero INT,
+    FOREIGN KEY (fk_livro) REFERENCES livros (id_livro),
+    FOREIGN KEY (fk_genero) REFERENCES generos (id_genero)
+  );
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`locais`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`locais` (
-  `id_local` INT(11) NOT NULL AUTO_INCREMENT,
-  `sessao_local` VARCHAR(10) NULL DEFAULT NULL,
-  `fileira_local` INT(11) NULL DEFAULT NULL,
-  `num_fileira_local` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_local`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`livros`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`livros` (
-  `id_livro` INT(11) NOT NULL AUTO_INCREMENT,
-  `titulo_livro` VARCHAR(80) NOT NULL,
-  `valor_venda_livro` DOUBLE NULL DEFAULT NULL,
-  `valor_aluguel_livro` DOUBLE NULL DEFAULT NULL,
-  `isbn_livro` VARCHAR(80) NULL DEFAULT NULL,
-  `quantidade_livro` INT(11) NULL DEFAULT NULL,
-  `fk_local_livro` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_livro`),
-  CONSTRAINT `livros_ibfk_1`
-    FOREIGN KEY (`fk_local_livro`)
-    REFERENCES `bd_biblioteca`.`locais` (`id_local`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-ALTER TABLE `bd_biblioteca`.`livros`
-ADD KEY `fk_local_livro` (`fk_local_livro`);
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`livros_autores`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`livros_autores` (
-  `fk_livro` INT(11) NULL DEFAULT NULL,
-  `fk_autor` INT(11) NULL DEFAULT NULL,
-  CONSTRAINT `livros_autores_ibfk_1`
-    FOREIGN KEY (`fk_autor`)
-    REFERENCES `bd_biblioteca`.`usuarios` (`id_usuario`),
-  CONSTRAINT `livros_autores_ibfk_2`
-    FOREIGN KEY (`fk_livro`)
-    REFERENCES `bd_biblioteca`.`livros` (`id_livro`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-ALTER TABLE `bd_biblioteca`.`livros_autores`
-ADD KEY `fk_autor` (`fk_autor`);
-
-ALTER TABLE `bd_biblioteca`.`livros_autores`
-ADD KEY `fk_livro` (`fk_livro`);
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`livros_generos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`livros_generos` (
-  `fk_livro` INT(11) NULL DEFAULT NULL,
-  `fk_genero` INT(11) NULL DEFAULT NULL,
-  CONSTRAINT `livros_generos_ibfk_1`
-    FOREIGN KEY (`fk_livro`)
-    REFERENCES `bd_biblioteca`.`livros` (`id_livro`),
-  CONSTRAINT `livros_generos_ibfk_2`
-    FOREIGN KEY (`fk_genero`)
-    REFERENCES `bd_biblioteca`.`generos` (`id_genero`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-ALTER TABLE `bd_biblioteca`.`livros_generos`
-ADD KEY `fk_livros` (`fk_livro`);
-
-ALTER TABLE `bd_biblioteca`.`livros_generos`
-ADD KEY `fk_generos` (`fk_genero`);
-
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`livros_movimentos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`livros_movimentos` (
-  `fk_livro` INT(11) NULL DEFAULT NULL,
-  `fk_movimento` INT(11) NULL DEFAULT NULL,
-  CONSTRAINT `livros_movimentos_ibfk_1`
-    FOREIGN KEY (`fk_livro`)
-    REFERENCES `bd_biblioteca`.`livros` (`id_livro`),
-  CONSTRAINT `livros_movimentos_ibfk_2`
-    FOREIGN KEY (`fk_movimento`)
-    REFERENCES `bd_biblioteca`.`movimentos` (`id_movimento`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-ALTER TABLE `bd_biblioteca`.`livros_movimentos`
-ADD KEY `fk_livros2` (`fk_livro`);
-
-ALTER TABLE `bd_biblioteca`.`livros_movimentos`
-ADD KEY `fk_movimento2` (`fk_movimento`);
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- CRIANDO A TABELA DE RELAÇÃO DE LIVROS COM MOVIMENTOS
+CREATE TABLE
+  IF NOT EXISTS livros_movimentos (
+    fk_livro INT,
+    fk_movimento INT,
+    FOREIGN KEY (fk_livro) REFERENCES livros (id_livro),
+    FOREIGN KEY (fk_movimento) REFERENCES movimentos (id_movimento)
+  );
