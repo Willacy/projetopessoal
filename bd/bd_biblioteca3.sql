@@ -1,127 +1,47 @@
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
--- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
--- -----------------------------------------------------
--- Schema bd_biblioteca
--- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema bd_biblioteca
--- -----------------------------------------------------
 DROP DATABASE bd_biblioteca;
-CREATE SCHEMA IF NOT EXISTS `bd_biblioteca` DEFAULT CHARACTER SET utf8mb4 ;
-USE `bd_biblioteca` ;
+CREATE DATABASE IF NOT EXISTS bd_biblioteca;
+USE bd_biblioteca;
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`usuarios`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`usuarios` (
-  `id_usuario` INT(11) NOT NULL AUTO_INCREMENT,
-  `nome_usuario` VARCHAR(80) NULL DEFAULT NULL,
-  `login_usuario` VARCHAR(80) NOT NULL,
-  `senha_usuario` VARCHAR(128) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_usuario`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+CREATE TABLE IF NOT EXISTS usuarios (
+  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+  nome_usuario VARCHAR(80),
+  login_usuario VARCHAR(80) NOT NULL UNIQUE,
+  senha_usuario VARCHAR(128) NOT NULL
+);
 
-ALTER TABLE `bd_biblioteca`.`usuarios`
-ADD UNIQUE KEY `login_usuarios` (`login_usuario`);
+CREATE TABLE IF NOT EXISTS estados (
+  id_estado INT PRIMARY KEY AUTO_INCREMENT,
+  nome_estado VARCHAR(45)
+);
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`estados`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`estados` (
-  `id_estado` INT NOT NULL,
-  `nome_estado` VARCHAR(45) NULL,
-  PRIMARY KEY (`id_estado`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS cidades(
+  id_cidade INT PRIMARY KEY AUTO_INCREMENT,
+  nome_cidade VARCHAR(45),
+  fk_estado INT,
+  FOREIGN KEY (fk_estado) REFERENCES estados(id_estado)
+);
 
+CREATE TABLE IF NOT EXISTS bairros(
+  id_bairro INT PRIMARY KEY AUTO_INCREMENT,
+  nome_bairro VARCHAR(45),
+  fk_cidade INT,
+  FOREIGN KEY (fk_cidade) REFERENCES cidades(id_cidade)
+);
 
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`cidades`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`cidades` (
-  `id_cidade` INT NOT NULL,
-  `nome_cidade` VARCHAR(45) NULL,
-  `estados_id_estado` INT NOT NULL,
-  PRIMARY KEY (`id_cidade`),
-  CONSTRAINT `fk_cidades_estados1`
-    FOREIGN KEY (`estados_id_estado`)
-    REFERENCES `bd_biblioteca`.`estados` (`id_estado`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS tipos_mov(
+  id_tipo_mov INT PRIMARY KEY AUTO_INCREMENT,
+  nome_tipo_mov VARCHAR(15)
+);
 
-ALTER TABLE `bd_biblioteca`.`usuarios`
-ADD UNIQUE KEY `login_usuario` (`login_usuario`);
-
-ALTER TABLE `bd_biblioteca`.`cidades`
-ADD KEY `fk_cidades_estados1_idx` (`estados_id_estado`);
-
-
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`bairros`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`bairros` (
-  `id_bairro` INT NOT NULL,
-  `nome_bairro` VARCHAR(45) NULL,
-  `cidades_id_cidade` INT NOT NULL,
-  PRIMARY KEY (`id_bairro`),
-  CONSTRAINT `fk_bairros_cidades1`
-    FOREIGN KEY (`cidades_id_cidade`)
-    REFERENCES `bd_biblioteca`.`cidades` (`id_cidade`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-ALTER TABLE `bd_biblioteca`.`bairros`
-ADD KEY `fk_bairros_cidades1_idx` (`cidades_id_cidade`);
-
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`tipos_mov`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`tipos_mov` (
-  `id_tipo_mov` INT(11) NOT NULL AUTO_INCREMENT,
-  `nome_tipo_mov` VARCHAR(15) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_tipo_mov`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-
--- -----------------------------------------------------
--- Table `bd_biblioteca`.`movimentos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bd_biblioteca`.`movimentos` (
-  `id_movimento` INT(11) NOT NULL AUTO_INCREMENT,
-  `data_movimento` DATE NULL DEFAULT NULL,
-  `quant_movimento` DOUBLE NULL DEFAULT NULL,
-  `fk_usuario_movimento` INT(11) NULL DEFAULT NULL,
-  `fk_tipo_movimento` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id_movimento`),
-  CONSTRAINT `movimentos_ibfk_1`
-    FOREIGN KEY (`fk_usuario_movimento`)
-    REFERENCES `bd_biblioteca`.`usuarios` (`id_usuario`),
-  CONSTRAINT `movimentos_ibfk_2`
-    FOREIGN KEY (`fk_tipo_movimento`)
-    REFERENCES `bd_biblioteca`.`tipos_mov` (`id_tipo_mov`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
-ALTER TABLE `bd_biblioteca`.`movimentos`
-ADD KEY `fk_usuario_movimento` (`fk_usuario_movimento`);
-
-ALTER TABLE `bd_biblioteca`.`movimentos`
-ADD KEY `fk_tipo_movimento` (`fk_tipo_movimento`);
-
-
+CREATE TABLE IF NOT EXISTS movimentos(
+  id_movimento INT PRIMARY KEY AUTO_INCREMENT,
+  data_movimento DATE,
+  quant_movimento DOUBLE NULL DEFAULT NULL,
+  fk_usuario INT,
+  fk_tipo INT,
+  FOREIGN KEY (fk_usuario) REFERENCES usuarios(id_usuario),
+  FOREIGN KEY (fk_tipo) REFERENCES tipos_mov(id_tipo_mov)
+);
 
 -- -----------------------------------------------------
 -- Table `bd_biblioteca`.`endereco`

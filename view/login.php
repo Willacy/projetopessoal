@@ -1,5 +1,5 @@
 <div class="corpo">
-    <form action="">
+    <form action="loginController.php">
         <label for="login">LOGIN: </label>
         <input type="text" name="login" id="login">
         <label for="senha">SENHA: </label>
