@@ -35,7 +35,12 @@ class Template
     {
         ?>
 
-            <?php require_once $conteudo ?>
+            <?php
+            $conteudo->telaLogin();
+            // require_once $conteudo;
+            // $telaLogin = new UsuarioView;
+            // $telaLogin->telaLogin();
+            ?>
 
 
         </body>
