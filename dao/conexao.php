@@ -29,4 +29,8 @@ class Conexao
         return $this->conexao;
     }
 
+    public function closeConexao(){
+        $this->conexao = null;
+    }
+
 }
