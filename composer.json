@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "pst-4":{
+            "app\\":"app",
+            "core\\":"core"
+        }
+    },
+    "require": {
+        "twig/twig": "^3.12"
+    }
+}
